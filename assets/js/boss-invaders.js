@@ -138,13 +138,21 @@
     // Y position: above player
     const baseY = mqMobile.matches ? (canvas.height - 220) : (canvas.height - 180);
 
-    // Compute segment widths and positions (dynamic columns with margins)
-    const segments = SHIELD_WORDS.length;
-    const usableW = canvas.width - SHIELD_SIDE_MARGIN*2;
-    const segW = usableW / segments;
-
+      // U-SHAPED SHIELD LAYOUT: More compact horizontal arrangement
+  const segments = SHIELD_WORDS.length;
+  const centerX = canvas.width / 2;
+  
+  // Calculate U-shape parameters
+  const uRadius = Math.min(120, (canvas.width - SHIELD_SIDE_MARGIN * 2) / 3); // Radius of the U curve
+  const uHeight = 80; // Height of the U curve
+  const wordSpacing = 20; // Space between words in the curve
+  
+  // Add shield energy/health system
+  const shieldEnergy = 100; // Base shield energy
+    
     for(let i=0;i<SHIELD_WORDS.length;i++){
       const word = SHIELD_WORDS[i];
+      
       // Pre-measure letters (unscaled)
       const lettersMeta = [];
       let wordW = 0;
@@ -156,12 +164,25 @@
       }
       if(wordW>0) wordW -= SHIELD_LETTER_SP; // trim trailing spacing
 
-      // Determine per-word scale to fit within its segment (with padding)
-      const maxInner = Math.max(40, segW - SHIELD_SEGMENT_PAD*2);
-      const scale = Math.min(1, wordW > 0 ? (maxInner / wordW) : 1);
+      // Position words in U-shape
+      let wordX, wordY;
+      if (i === 0) { // COACHING - left side of U
+        wordX = centerX - uRadius - wordW/2;
+        wordY = baseY - uHeight;
+      } else if (i === 1) { // GOALS - top of U
+        wordX = centerX - wordW/2;
+        wordY = baseY - uHeight - 15;
+      } else { // FEEDBACK - right side of U
+        wordX = centerX + uRadius - wordW/2;
+        wordY = baseY - uHeight;
+      }
+
+      // Scale word to fit if needed
+      const maxWordWidth = uRadius * 1.8; // Allow words to be wider than radius
+      const scale = Math.min(1, wordW > 0 ? (maxWordWidth / wordW) : 1);
       const letterSpScaled = 0; // remove inter-letter gaps for legibility
 
-      // Compute scaled widths/heights per letter to get accurate total width with padding
+      // Compute scaled dimensions per letter
       const baseH = Math.ceil(SHIELD_FONT_SIZE * 1.25);
       const scaledDims = lettersMeta.map(meta => {
         const wUn = Math.max(18, meta.w);
@@ -170,25 +191,10 @@
         const h = Math.ceil((hUn + 8) * scale);
         return { ch: meta.ch, w, h };
       });
-      const totalW = scaledDims.reduce((s, d) => s + d.w, 0) + Math.max(0, (scaledDims.length - 1) * letterSpScaled);
 
-      // Center word within its segment, clamped to padding on both sides
-      const segX0 = SHIELD_SIDE_MARGIN + i*segW;
-      const segCenter = segX0 + segW/2;
-      let segLeft = Math.round(segX0 + SHIELD_SEGMENT_PAD);
-      const segRight = Math.round(segX0 + segW - SHIELD_SEGMENT_PAD);
-      // Give the leftmost shield a bit more breathing room from the wall
-      if (i === 0) segLeft += SHIELD_FIRST_OFFSET;
-
-      let x = Math.round(segCenter - totalW/2);
-      if (x < segLeft) x = segLeft;
-      if (x + totalW > segRight) x = segRight - totalW;
-      // Reduce spaces between words by nudging edge words inward
-      if (i === 0) x += SHIELD_INWARD_NUDGE;            // move COACHING right
-      if (i === segments - 1) x -= SHIELD_INWARD_NUDGE; // move FEEDBACK left
-
-      // Build letters with offscreen glyphs (scaled) using the centered start X
+      // Build letters with offscreen glyphs (scaled)
       const letters = [];
+      let currentX = wordX;
       for(const dim of scaledDims){
         const c = document.createElement('canvas');
         c.width = dim.w; c.height = dim.h;
@@ -205,42 +211,80 @@
         cx.fillText(dim.ch, 4, baselineY);
         cx.restore();
 
-        letters.push({ x, y: baseY, w: c.width, h: c.height, topHits:0, bottomHits:0, destroyed:false, off:c });
-        x += c.width + letterSpScaled; // 0 spacing between letters
+        letters.push({ x: currentX, y: wordY, w: c.width, h: c.height, topHits:0, bottomHits:0, destroyed:false, off:c });
+        currentX += c.width + letterSpScaled;
       }
-      // Build horizontal protective segments above the word (one per letter)
+      
+      // Build curved protective segments above the word (following U-shape)
       const segs = [];
-      for (const L of letters){
-        segs.push({ x: L.x, y: L.y - L.h - 8, w: L.w, h: 6, hits: 0, destroyed: false });
+      for (let j = 0; j < letters.length; j++){
+        const L = letters[j];
+        let segX = L.x;
+        let segY = L.y - L.h - 8;
+        
+        // Curve the segments to follow the U-shape
+        if (i === 0) { // Left side - curve up and right
+          segY -= Math.sin((j / (letters.length - 1)) * Math.PI * 0.3) * 15;
+          segX += Math.sin((j / (letters.length - 1)) * Math.PI * 0.3) * 8;
+        } else if (i === 2) { // Right side - curve up and left
+          segY -= Math.sin((j / (letters.length - 1)) * Math.PI * 0.3) * 15;
+          segX -= Math.sin((j / (letters.length - 1)) * Math.PI * 0.3) * 8;
+        } else { // Top - slight curve
+          segY -= Math.sin((j / (letters.length - 1)) * Math.PI) * 10;
+        }
+        
+        segs.push({ x: segX, y: segY, w: L.w, h: 6, hits: 0, destroyed: false });
       }
-      shields.push({ word, letters, segments: segs });
+      
+      shields.push({ 
+        word, 
+        letters, 
+        segments: segs, 
+        uPosition: i,
+        energy: shieldEnergy,
+        maxEnergy: shieldEnergy,
+        regenerationRate: 0.5, // Energy per second
+        lastRegenTime: 0
+      });
     }
   }
 
   function collideBulletWithShields(b){
     // returns true if bullet consumed by shield or segment
     for(const sh of shields){
-      // 1) Check word-top segments (2 hits total from any direction)
+      // 1) Check word-top segments (energy-based system)
       if (sh.segments) {
         for (const S of sh.segments){
           if (S.destroyed) continue;
           const sx=S.x, sy=S.y, sw=S.w, shh=S.h;
           if (b.x>sx && b.x<sx+sw && b.y>sy && b.y<sy+shh){
-            S.hits = Math.min(2, S.hits + 1);
-            if (S.hits >= 2) S.destroyed = true;
+            // Decrease shield energy on hit
+            sh.energy = Math.max(0, sh.energy - 15); // Each hit reduces energy by 15
+            
+            // Destroy segment if shield energy is depleted
+            if (sh.energy <= 0) {
+              S.destroyed = true;
+            }
+            
             spawnDebris(b.x, b.y, b.vy<0 ? 1 : -1);
             return true; // bullet consumed
           }
         }
       }
+      
+      // 2) Check letters (energy-based system)
       for(const L of sh.letters){
         if(L.destroyed) continue;
         const lx = L.x, lyTop = L.y - L.h, lw = L.w, lh = L.h;
         if(b.x>lx && b.x<lx+lw && b.y>lyTop && b.y<lyTop+lh){
-          // Allow up to 4 total hits from any side; remove 1/4 per hit from the respective side
-          if(b.vy>0){ L.topHits = Math.min(4, L.topHits+1); }
-          else if(b.vy<0){ L.bottomHits = Math.min(4, L.bottomHits+1); }
-          if(L.topHits + L.bottomHits >= 4){ L.destroyed = true; }
+          // Decrease shield energy on hit
+          sh.energy = Math.max(0, sh.energy - 10); // Each hit reduces energy by 10
+          
+          // Mark letter as destroyed if shield energy is depleted
+          if (sh.energy <= 0) {
+            L.destroyed = true;
+          }
+          
           // Spawn debris
           spawnDebris(b.x, b.y, b.vy<0 ? 1 : -1);
           // consume bullet
@@ -319,6 +363,14 @@
     for(let i=bullets.length-1;i>=0;i--){ if(collideBulletWithShields(bullets[i])) bullets.splice(i,1); }
     for(let i=enemyBullets.length-1;i>=0;i--){ if(collideBulletWithShields(enemyBullets[i])) enemyBullets.splice(i,1); }
     for(let i=bossBullets.length-1;i>=0;i--){ if(collideBulletWithShields(bossBullets[i])) bossBullets.splice(i,1); }
+    
+    // Shield regeneration system
+    for(const shield of shields){
+      if(shield.energy < shield.maxEnergy && (t - shield.lastRegenTime) >= 1.0){
+        shield.energy = Math.min(shield.maxEnergy, shield.energy + shield.regenerationRate);
+        shield.lastRegenTime = t;
+      }
+    }
 
     // Enemy formation move
     if(enemiesAlive()){
@@ -412,8 +464,25 @@
       if (!sh.segments) continue;
       for (const S of sh.segments){
         if (S.destroyed) continue;
-        ctx.fillStyle = '#FF6600';
-        // rounded small bar
+        
+        // Enhanced U-shaped shield segments with gradient and glow
+        const shield = shields.find(s => s.segments.includes(S));
+        const energyRatio = shield ? shield.energy / shield.maxEnergy : 1;
+        
+        // Dynamic color based on energy level
+        const baseColor = energyRatio > 0.7 ? '#FF6600' : energyRatio > 0.3 ? '#FF8800' : '#FF4400';
+        const secondaryColor = energyRatio > 0.7 ? '#FF4400' : energyRatio > 0.3 ? '#FF6600' : '#FF2200';
+        
+        const gradient = ctx.createLinearGradient(S.x, S.y, S.x, S.y + S.h);
+        gradient.addColorStop(0, baseColor);
+        gradient.addColorStop(1, secondaryColor);
+        
+        // Add glow effect (stronger when energy is high)
+        ctx.shadowColor = baseColor;
+        ctx.shadowBlur = energyRatio > 0.5 ? 6 : 2;
+        ctx.fillStyle = gradient;
+        
+        // Rounded small bar with slight curve based on U-position
         const r = 3;
         ctx.beginPath();
         ctx.moveTo(S.x + r, S.y);
@@ -427,6 +496,9 @@
         ctx.quadraticCurveTo(S.x, S.y, S.x + r, S.y);
         ctx.closePath();
         ctx.fill();
+        
+        // Reset shadow
+        ctx.shadowBlur = 0;
       }
     }
 
@@ -446,6 +518,66 @@
         ctx.clip();
         ctx.drawImage(L.off, L.x, L.y - L.h);
         ctx.restore();
+      }
+    }
+    
+    // Draw connecting U-shape lines to enhance the shield formation
+    if (shields.length > 0) {
+      ctx.strokeStyle = 'rgba(255, 102, 0, 0.3)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      
+      // Find the three shield positions
+      const leftShield = shields.find(s => s.uPosition === 0);
+      const topShield = shields.find(s => s.uPosition === 1);
+      const rightShield = shields.find(s => s.uPosition === 2);
+      
+      if (leftShield && topShield && rightShield) {
+        // Draw curved connecting lines
+        ctx.beginPath();
+        
+        // Left to top curve
+        const leftCenter = {
+          x: leftShield.letters[Math.floor(leftShield.letters.length/2)].x + leftShield.letters[Math.floor(leftShield.letters.length/2)].w/2,
+          y: leftShield.letters[Math.floor(leftShield.letters.length/2)].y
+        };
+        const topCenter = {
+          x: topShield.letters[Math.floor(topShield.letters.length/2)].x + topShield.letters[Math.floor(topShield.letters.length/2)].w/2,
+          y: topShield.letters[Math.floor(topShield.letters.length/2)].y
+        };
+        const rightCenter = {
+          x: rightShield.letters[Math.floor(rightShield.letters.length/2)].x + rightShield.letters[Math.floor(rightShield.letters.length/2)].w/2,
+          y: rightShield.letters[Math.floor(rightShield.letters.length/2)].y
+        };
+        
+        // Draw curved path
+        ctx.moveTo(leftCenter.x, leftCenter.y);
+        ctx.quadraticCurveTo(leftCenter.x + 40, leftCenter.y - 40, topCenter.x, topCenter.y);
+        ctx.quadraticCurveTo(rightCenter.x - 40, rightCenter.y - 40, rightCenter.x, rightCenter.y);
+        
+        ctx.stroke();
+      }
+      
+      ctx.setLineDash([]); // Reset line dash
+      
+      // Draw shield energy indicators
+      for(const shield of shields){
+        if(shield.energy < shield.maxEnergy){
+          const centerLetter = shield.letters[Math.floor(shield.letters.length/2)];
+          const energyBarWidth = 30;
+          const energyBarHeight = 4;
+          const energyBarX = centerLetter.x + centerLetter.w/2 - energyBarWidth/2;
+          const energyBarY = centerLetter.y - centerLetter.h - 20;
+          
+          // Background bar
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.fillRect(energyBarX, energyBarY, energyBarWidth, energyBarHeight);
+          
+          // Energy bar
+          const energyWidth = (shield.energy / shield.maxEnergy) * energyBarWidth;
+          ctx.fillStyle = shield.energy > 0.7 ? '#00FF00' : shield.energy > 0.3 ? '#FFFF00' : '#FF0000';
+          ctx.fillRect(energyBarX, energyBarY, energyWidth, energyBarHeight);
+        }
       }
     }
 
@@ -513,7 +645,24 @@
     try { if (running && !paused) togglePause(); } catch(_){}
   };
   function hardReset(){ running=false; paused=false; awaitingResume=false; startOverlay.style.display='grid'; gameOverOverlay.style.display='none'; resumeOverlay.style.display='none'; }
-  function resetWorld(){ world.score=0; world.lives=3; world.wave=1; scoreEl.textContent=world.score; livesEl.textContent=world.lives; waveEl.textContent=world.wave; player.reset(); bullets.length=0; enemyBullets.length=0; bossBullets.length=0; explosions.length=0;
+  function resetWorld(){ 
+    world.score=0; 
+    world.lives=3; 
+    world.wave=1; 
+    scoreEl.textContent=world.score; 
+    livesEl.textContent=world.lives; 
+    waveEl.textContent=world.wave; 
+    player.reset(); 
+    bullets.length=0; 
+    enemyBullets.length=0; 
+    bossBullets.length=0; 
+    explosions.length=0;
+    
+    // Reset shield energy
+    for(const shield of shields){
+      shield.energy = shield.maxEnergy;
+      shield.lastRegenTime = 0;
+    }
     debris.length=0;
     buildShields();
     spawnWave(world.wave); t=0; }
