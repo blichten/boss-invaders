@@ -1,0 +1,37 @@
+{
+  "name": "boss-invaders",
+  "version": "0.1.1",
+  "description": "A modern Space Invaders-style game featuring 'bad bosses' for lead generation",
+  "main": "boss-invaders-prototype.html",
+  "scripts": {
+    "start": "open boss-invaders-prototype.html",
+    "dev": "python3 -m http.server 8000",
+    "deploy:staging": "./deploy-staging.sh",
+    "test": "echo 'No tests specified' && exit 0"
+  },
+  "keywords": [
+    "game",
+    "space-invaders",
+    "javascript",
+    "html5",
+    "canvas",
+    "lead-generation",
+    "wordpress",
+    "plugin"
+  ],
+  "author": "Virtual Leadership Programs",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blichten/boss-invaders.git"
+  },
+  "bugs": {
+    "url": "https://github.com/blichten/boss-invaders/issues"
+  },
+  "homepage": "https://github.com/blichten/boss-invaders#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+} 
