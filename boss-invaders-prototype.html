@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boss Invaders — Gameplay Prototype</title>
+  <style>
+    :root {
+      --bg: #0b1021;
+      --fg: #e8edf9;
+      --accent: #4f8cff;
+      --accent2: #21d07a;
+      --danger: #ff3b3b;
+      --panel: #12183a;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: radial-gradient(1200px 800px at 50% 20%, #141b3f 0%, var(--bg) 60%);
+      color: var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    .wrap {
+      display: grid;
+      place-items: center;
+      min-height: 100%;
+      padding: 16px;
+    }
+    .game-title {
+      font-size: 3rem;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 5px;
+      letter-spacing: 2px;
+    }
+    .points-list {
+      position: fixed;
+      left: calc((50% - 400px) / 2);
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 2rem;
+      background: rgba(0,0,0,0.2);
+      padding: 8px;
+      border-radius: 8px;
+      z-index: 12;
+    }
+    #cornerLogo {
+      position: fixed;
+      top: 5vh;
+      left: 5vw;
+      width: 110px;
+      height: auto;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .right-cta {
+      position: fixed;
+      top: 50%;
+      left: calc((50% + 400px + 100vw) / 2);
+      transform: translate(-50%, -50%);
+      z-index: 15;
+      max-width: 420px;
+    }
+    .right-cta-inner {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid #1c2452;
+      border-radius: 10px;
+      padding: 10px 12px;
+      line-height: 1.25;
+      font-weight: 600;
+      font-size: 2.1rem;
+      text-align: center;
+    }
+    .right-cta-inner a { color: #4f8cff; text-decoration: underline; }
+    .point-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    /* Score display above canvas */
+    .score-display {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      user-select: none;
+      letter-spacing: .3px;
+    }
+
+    /* Controls below canvas */
+    .controls {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 18px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: .2px;
+      user-select: none;
+    }
+    .chip { background: var(--panel); border: 1px solid #1c2452; padding: 6px 10px; border-radius: 10px; }
+    .btn { cursor: pointer; background: var(--accent); color: white; border: 0; padding: 8px 12px; border-radius: 10px; font-weight: 700; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    canvas { background: #050816; border: 1px solid #202a63; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.5), inset 0 0 60px rgba(79,140,255,.06); }
+
+    .overlay {
+      position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
+    }
+    .panel {
+      pointer-events: auto; width: min(92vw, 640px); background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border: 1px solid #2a3474; border-radius: 16px; padding: 18px 18px 14px; text-align: center;
+      backdrop-filter: blur(6px);
+    }
+    .panel h1 { margin: 6px 0 8px; font-size: 26px; }
+    .panel p { margin: 6px 0; opacity: .9; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: #11173a; border: 1px solid #25308a; padding: 2px 6px; border-radius: 6px; }
+    .row { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <img id="cornerLogo" src="./img/vlp-logo.png" alt="Virtual Leadership Programs Logo" />
+    <div class="points-list">
+      <div class="point-item"><img src="./img/michael-scott-1.png" width="60"> 10 pts</div>
+      <div class="point-item"><img src="./img/mr-burns-1.png" width="60"> 20 pts</div>
+      <div class="point-item"><img src="./img/bill-lumbergh-1.png" width="60"> 30 pts</div>
+      <div class="point-item"><img src="./img/miranda-priestly-1.png" width="60"> 40 pts</div>
+      <div class="point-item"><img src="./img/megatron-1.png" width="60"> 100 pts</div>
+    </div>
+    <div class="right-cta">
+      <div class="right-cta-inner">
+        Got Bad Boss Behaviors invading your workplace?
+        <br/>
+        Get <a href="https://VirtualLeadershipPrograms.com" target="_blank" rel="noopener noreferrer">Virtual Leadership Programs</a>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="game-title">BOSS INVADERS</div>
+      <div class="score-display">
+        <div class="chip">Score: <span id="score">0</span></div>
+      </div>
+      <canvas id="game" width="800" height="600" aria-label="Boss Invaders"></canvas>
+      <div class="controls">
+        <div class="chip">Lives: <span id="lives">3</span></div>
+        <div class="chip">Wave: <span id="wave">1</span></div>
+        <button id="pauseBtn" class="btn">Pause (P)</button>
+        <button id="resetBtn" class="btn" title="Reset game">Reset</button>
+      </div>
+    </div>
+
+  <!-- Overlays -->
+  <div class="overlay" id="startOverlay">
+    <div class="panel">
+      <h1>Boss Invaders</h1>
+      <p>Arcade prototype — eliminate the "bad bosses" and protect your team.</p>
+      <p><span class="kbd">←</span>/<span class="kbd">A</span> move left • <span class="kbd">→</span>/<span class="kbd">D</span> move right • <span class="kbd">Space</span> shoot • <span class="kbd">P</span> pause</p>
+      <div class="row"><button id="startBtn" class="btn">Start</button></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="gameOverOverlay" style="display:none">
+    <div class="panel">
+      <h1 id="gameOverTitle">Game Over</h1>
+      <p id="finalStats"></p>
+      <div class="row"><button id="playAgainBtn" class="btn">Play Again</button></div>
+    </div>
+  </div>
+  <div class="overlay" id="resumeOverlay" style="display:none">
+    <div class="panel">
+      <h1>Life Lost</h1>
+      <p>Press Next to continue</p>
+      <div class="row"><button id="nextBtn" class="btn">Next</button></div>
+    </div>
+  </div>
+
+  <script>
+    // --- Helpers ------------------------------------------------------------
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const chance = (p) => Math.random() < p;
+
+    // --- Sprites ------------------------------------------------------------
+    // Row-to-sprite mapping (0-based rows => files in ./img)
+    const spriteSources = [
+      'michael-scott-1.png',     // row 0 (Row 1)
+      'mr-burns-1.png',          // row 1 (Row 2)
+      'bill-lumbergh-1.png',     // row 2 (Row 3)
+      'miranda-priestly-1.png'   // row 3 (Row 4)
+    ];
+    const sprites = spriteSources.map(src => { const img = new Image(); img.src = './img/' + src; return img; });
+
+    // Player & Boss sprites
+    const playerImg = new Image();
+    playerImg.src = './img/vlp-ship.png';
+    const bossImg = new Image();
+    bossImg.src = './img/megatron-1.png';
+
+    // Boss appearance SFX (evil laugh in /sfx)
+    const bossAppearSfx = new window.Audio('./sfx/evil-laugh.wav');
+    bossAppearSfx.preload = 'auto';
+    bossAppearSfx.volume = 0.5;
+    function playBossLaugh() {
+      try {
+        bossAppearSfx.currentTime = 0;
+        const p = bossAppearSfx.play();
+        if (p && typeof p.catch === 'function') p.catch(()=>{});
+      } catch(_) {}
+    }
+    let lastLaughTime = -999;
+
+
+    // --- Audio (Web Audio API) --------------------------------------------
+    const Audio = (() => {
+      let ctx;
+      function getCtx(){ if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); return ctx; }
+      function beep({freq=440, type='square', duration=0.08, vol=0.2, attack=0.002, release=0.06}={}) {
+        const ac = getCtx();
+        const t0 = ac.currentTime;
+        const osc = ac.createOscillator();
+        const gain = ac.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t0);
+        gain.gain.setValueAtTime(0, t0);
+        gain.gain.linearRampToValueAtTime(vol, t0 + attack);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration + release);
+        osc.connect(gain).connect(ac.destination);
+        osc.start(t0);
+        osc.stop(t0 + duration + release + 0.02);
+      }
+      return {
+        shoot(){ beep({freq: 920, type:'square', duration:0.06, vol:0.18}); },
+        hit(){ beep({freq: 320, type:'triangle', duration:0.1, vol:0.22}); },
+        playerHit(){ beep({freq: 180, type:'sawtooth', duration:0.15, vol:0.25}); },
+        wave(){ beep({freq: 660, type:'sine', duration:0.08, vol:0.2}); setTimeout(()=>beep({freq:880,type:'sine',duration:0.08,vol:0.2}),100); },
+        gameOver(){ beep({freq: 220, type:'sawtooth', duration:0.2, vol:0.25}); setTimeout(()=>beep({freq:160,type:'triangle',duration:0.25,vol:0.22}),140); }
+      };
+    })();
+
+    // --- Game State --------------------------------------------------------
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+    const waveEl = document.getElementById('wave');
+
+    const startOverlay = document.getElementById('startOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const gameOverTitle = document.getElementById('gameOverTitle');
+    const finalStats = document.getElementById('finalStats');
+
+    const startBtn = document.getElementById('startBtn');
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resumeOverlay = document.getElementById('resumeOverlay');
+    const nextBtn = document.getElementById('nextBtn');
+    let awaitingResume = false;
+    nextBtn.addEventListener('click', () => {
+      resumeOverlay.style.display = 'none';
+      paused = false;
+      awaitingResume = false;
+    });
+
+    let running = false;
+    let paused = false;
+    let t = 0; // time accumulator
+
+    // Boss spawn config/cooldown
+    const bossConfig = { spawnProb: 0.0015, cooldown: 10 }; // seconds between possible spawns
+    let bossLastSpawnTime = -999;
+
+    const world = {
+      score: 0,
+      lives: 3,
+      wave: 1,
+      width: canvas.width,
+      height: canvas.height,
+    };
+
+    function resetWorld() {
+      world.score = 0; world.lives = 3; world.wave = 1;
+      scoreEl.textContent = world.score;
+      livesEl.textContent = world.lives;
+      waveEl.textContent = world.wave;
+      player.reset();
+      bullets.length = 0; enemyBullets.length = 0; explosions.length = 0;
+      spawnWave(world.wave);
+      t = 0;
+    }
+
+    // --- Entities ----------------------------------------------------------
+    const player = {
+      x: canvas.width/2, y: canvas.height - 40, w: 46, h: 46,
+      speed: 300, cooldown: 0, fireDelay: 0.3,
+      reset(){ this.x = canvas.width/2; this.y = canvas.height - 40; this.cooldown = 0; },
+      move(dx, dt){ this.x = clamp(this.x + dx * this.speed * dt, this.w/2 + 8, canvas.width - this.w/2 - 8); },
+      canFire(){ return this.cooldown <= 0; },
+      fire(){
+        bullets.push({ x: this.x, y: this.y - this.h/2, r: 3, vy: -520 });
+        this.cooldown = this.fireDelay;
+        Audio.shoot();
+      }
+    };
+
+    const bullets = []; // {x,y,r,vy}
+    const enemyBullets = []; // {x,y,r,vy}
+    const explosions = []; // {x,y,ttl}
+    const bossBullets = []; // bigger bombs from boss
+    const boss = {
+      active: false, x: 0, y: 40, w: 72, h: 54, dir: 1,
+      speed: 160,
+      spawn(){
+        this.active = true; this.y = 40; this.w = 72; this.h = 54;
+        this.dir = Math.random() < 0.5 ? 1 : -1;
+        this.x = this.dir > 0 ? -this.w : canvas.width + this.w;
+        // Play laugh if enough time passed
+        if (t - lastLaughTime > 1.0) {
+          playBossLaugh();
+          lastLaughTime = t;
+        }
+      },
+      despawn(){ this.active = false; }
+    };
+
+    let enemies = []; // {x,y,w,h,alive}
+    let enemyDir = 1; // 1 right, -1 left
+    let enemySpeed = 35; // base, scales with wave
+
+    function spawnWave(wave) {
+      enemies.length = 0;
+      const cols = 10;
+      const rows = Math.min(1 + (wave - 1), 4); // start at 1, +1 per wave, cap at 4
+      const enemyW = 44, enemyH = 44;          // scaled down from 200x200
+      const paddingX = 18, paddingY = 14;
+      const lowestRowY = 200;                  // row 1 baseline stays constant
+      const startX = 60;
+      for (let r = 0; r < rows; r++) {
+        const y = lowestRowY - r * (enemyH + paddingY); // stack upward
+        for (let c = 0; c < cols; c++) {
+          enemies.push({ x: startX + c*(enemyW+paddingX), y, w: enemyW, h: enemyH, alive: true, row:r, col:c });
+        }
+      }
+      enemyDir = 1;
+      enemySpeed = 35 + (wave-1) * 10; // speed up each wave
+    }
+
+    function enemiesAlive(){ return enemies.some(e=>e.alive); }
+
+    // --- Input -------------------------------------------------------------
+    const keys = new Set();
+    addEventListener('keydown', (e)=>{
+      if (['ArrowLeft','ArrowRight','a','d','A','D',' '].includes(e.key)) e.preventDefault();
+      keys.add(e.key);
+      if (e.key === 'p' || e.key === 'P') togglePause();
+    });
+    addEventListener('keyup', (e)=> keys.delete(e.key));
+
+    // --- Game Loop ---------------------------------------------------------
+    let last = 0;
+    function loop(ts){
+      if (!running) return;
+      if (paused) { requestAnimationFrame(loop); return; }
+      const dt = (ts - last) / 1000; last = ts; t += dt;
+      update(dt); draw();
+      requestAnimationFrame(loop);
+    }
+
+    function update(dt){
+      // Player movement
+      const left = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
+      const right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
+      if (left && !right) player.move(-1, dt);
+      if (right && !left) player.move(1, dt);
+
+      // Player fire
+      player.cooldown -= dt;
+      if ((keys.has(' ') || keys.has('Spacebar')) && player.canFire()) player.fire();
+
+      // Bullets update
+      for (const b of bullets) b.y += b.vy * dt;
+      for (const b of enemyBullets) b.y += b.vy * dt;
+      for (const b of bossBullets) b.y += b.vy * dt;
+
+      // Enemy formation movement
+      if (enemiesAlive()) {
+        let minX = Infinity, maxX = -Infinity;
+        for (const e of enemies) if (e.alive) { minX = Math.min(minX, e.x); maxX = Math.max(maxX, e.x + e.w); }
+        const hitEdge = (enemyDir > 0 && maxX + enemySpeed*dt > canvas.width - 12) || (enemyDir < 0 && minX - enemySpeed*dt < 12);
+        if (hitEdge) {
+          enemyDir *= -1;
+          for (const e of enemies) if (e.alive) e.y += 16; // descend
+        } else {
+          for (const e of enemies) if (e.alive) e.x += enemySpeed * enemyDir * dt;
+        }
+
+        // Adjust fire rate and speed by row
+        const aliveCols = {};
+        enemies.forEach(e=>{ if(e.alive) aliveCols[e.col] = e; });
+        const cols = Object.values(aliveCols);
+        if (cols.length) {
+          const shooter = cols[Math.floor(Math.random()*cols.length)];
+          let fireChance, speed;
+          switch(shooter.row) {
+            case 0: fireChance = 0.01; speed = 180; break; // row 1 - slow/rare
+            case 1: fireChance = 0.015; speed = 200; break;
+            case 2: fireChance = 0.02; speed = 220; break;
+            case 3: fireChance = 0.025; speed = 240; break;
+            default: fireChance = 0.02; speed = 200;
+          }
+          if (chance(fireChance)) {
+            enemyBullets.push({ x: shooter.x + shooter.w/2, y: shooter.y + shooter.h, r: 3, vy: speed });
+          }
+        }
+      }
+
+      // Boss spawn/move/shoot
+      if (!boss.active && world.wave >= 2 && (t - bossLastSpawnTime) >= bossConfig.cooldown && chance(bossConfig.spawnProb)) {
+        boss.spawn();
+        bossLastSpawnTime = t;
+      }
+      if (boss.active) {
+        boss.x += boss.speed * boss.dir * dt;
+        // shoot larger bombs occasionally
+        if (chance(0.02)) {
+          bossBullets.push({ x: boss.x + boss.w/2, y: boss.y + boss.h, r: 12, vy: 240 });
+        }
+        // despawn when offscreen
+        if ((boss.dir > 0 && boss.x > canvas.width + boss.w) || (boss.dir < 0 && boss.x < -boss.w)) {
+          boss.despawn();
+        }
+      }
+
+      // Collisions: player bullets vs enemies
+      for (const b of bullets) {
+        for (const e of enemies) {
+          if (!e.alive) continue;
+          if (b.x > e.x && b.x < e.x + e.w && b.y > e.y && b.y < e.y + e.h) {
+            e.alive = false; b.y = -9999; // remove bullet
+            const pointsPerRow = [10, 20, 30, 40];
+            world.score += pointsPerRow[e.row] || 10; scoreEl.textContent = world.score;
+            Audio.hit();
+            explosions.push({ x: b.x, y: b.y, ttl: .25 });
+          }
+        }
+      }
+
+      // Collisions: player bullets vs boss (triple points)
+      if (boss.active) {
+        for (const b of bullets) {
+          if (b.x > boss.x && b.x < boss.x + boss.w && b.y > boss.y && b.y < boss.y + boss.h) {
+            b.y = -9999; // remove bullet
+            world.score += 100; scoreEl.textContent = world.score;
+            Audio.hit();
+            explosions.push({ x: b.x, y: b.y, ttl: .3 });
+            boss.despawn();
+            break;
+          }
+        }
+      }
+
+      // Collisions: enemy bullets vs player
+      for (const b of enemyBullets) {
+        if (b.x > player.x - player.w/2 && b.x < player.x + player.w/2 && b.y > player.y - player.h/2 && b.y < player.y + player.h/2) {
+          b.y = 9999;
+          world.lives -= 1; livesEl.textContent = world.lives;
+          Audio.playerHit();
+          explosions.push({ x: player.x, y: player.y-8, ttl: .3 });
+          player.reset();
+          paused = true;
+          awaitingResume = true;
+          resumeOverlay.style.display = 'grid';
+          if (world.lives <= 0) return endGame(false);
+        }
+      }
+
+      // Collisions: boss bombs vs player
+      for (const b of bossBullets) {
+        if (b.x > player.x - player.w/2 && b.x < player.x + player.w/2 && b.y > player.y - player.h/2 && b.y < player.y + player.h/2) {
+          b.y = 9999;
+          world.lives = Math.max(0, world.lives - 1); livesEl.textContent = world.lives;
+          Audio.playerHit();
+          explosions.push({ x: player.x, y: player.y-8, ttl: .3 });
+          player.reset();
+          paused = true;
+          awaitingResume = true;
+          resumeOverlay.style.display = 'grid';
+          if (world.lives <= 0) return endGame(false);
+        }
+      }
+
+      // Remove offscreen bullets
+      for (let i=bullets.length-1;i>=0;i--) if (bullets[i].y < -20) bullets.splice(i,1);
+      for (let i=enemyBullets.length-1;i>=0;i--) if (enemyBullets[i].y > canvas.height+20) enemyBullets.splice(i,1);
+      for (let i=bossBullets.length-1;i>=0;i--) {
+        const bb = bossBullets[i];
+        if (bb.y > canvas.height+20) {
+          explosions.push({ x: bb.x, y: canvas.height - 12, ttl: 0.35 });
+          bossBullets.splice(i,1);
+        }
+      }
+
+      // Explosions decay
+      for (let i=explosions.length-1;i>=0;i--) { explosions[i].ttl -= dt; if (explosions[i].ttl <= 0) explosions.splice(i,1); }
+
+      // Check lose by descent
+      for (const e of enemies) if (e.alive && e.y + e.h >= player.y - 6) return endGame(false);
+
+      // Next wave
+      if (!enemiesAlive()) {
+        world.wave += 1; waveEl.textContent = world.wave;
+        Audio.wave();
+        spawnWave(world.wave);
+      }
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // starfield
+      ctx.globalAlpha = .5;
+      for (let i=0;i<70;i++) {
+        const x = (i*97 + (t*20)%800) % 800; const y = (i*53 % 600);
+        ctx.fillStyle = i%7===0 ? '#8ab6ff' : '#5563a5';
+        ctx.fillRect(x, y, 2, 2);
+      }
+      ctx.globalAlpha = 1;
+
+      // player (vlp ship sprite)
+      ctx.save();
+      if (playerImg && playerImg.complete) {
+        ctx.drawImage(playerImg, player.x - player.w/2, player.y - player.h/2, player.w, player.h);
+      } else {
+        ctx.translate(player.x, player.y);
+        ctx.fillStyle = '#6fd3a5';
+        roundedRect(ctx, -player.w/2, -player.h/2, player.w, player.h, 6);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // boss sprite
+      if (boss.active) {
+        if (bossImg && bossImg.complete) {
+          ctx.drawImage(bossImg, boss.x, boss.y, boss.w, boss.h);
+        } else {
+          ctx.fillStyle = '#cccccc';
+          ctx.fillRect(boss.x, boss.y, boss.w, boss.h);
+        }
+      }
+
+      // enemies (bad bosses sprites)
+      for (const e of enemies) if (e.alive) {
+        const img = sprites[e.row];
+        if (img && img.complete) {
+          ctx.drawImage(img, e.x, e.y, e.w, e.h);
+        } else {
+          // Fallback while image is loading
+          ctx.save();
+          ctx.translate(e.x, e.y);
+          ctx.fillStyle = '#f3b24b';
+          roundedRect(ctx, 0, 0, e.w, e.h, 6); ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      // bullets
+      ctx.fillStyle = '#FF6600';
+      for (const b of bullets) { ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill(); }
+      ctx.fillStyle = '#ffffff';
+      for (const b of enemyBullets) { ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill(); }
+
+      // boss bombs with glow + short trail
+      for (const b of bossBullets) {
+        // trail
+        const trailLen = Math.min(40, Math.max(10, b.r * 3));
+        const gradTrail = ctx.createLinearGradient(b.x, b.y - trailLen, b.x, b.y);
+        gradTrail.addColorStop(0, 'rgba(255,204,102,0.0)');
+        gradTrail.addColorStop(1, 'rgba(255,204,102,0.6)');
+        ctx.fillStyle = gradTrail;
+        ctx.fillRect(b.x - Math.max(2, b.r*0.3), b.y - trailLen, Math.max(4, b.r*0.6), trailLen);
+        // glow
+        const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r*1.6);
+        grad.addColorStop(0, 'rgba(255,230,150,0.9)');
+        grad.addColorStop(1, 'rgba(255,120,60,0.0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r*1.2, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#ffcc66';
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
+      }
+
+      // explosions
+      for (const ex of explosions) {
+        ctx.save();
+        const k = Math.min(1, Math.max(0, ex.ttl / 0.3));
+        ctx.globalAlpha = k;
+        const r = 18 * (1 - k);
+        const grad = ctx.createRadialGradient(ex.x, ex.y, 0, ex.x, ex.y, r);
+        grad.addColorStop(0, 'rgba(255,230,150,0.9)');
+        grad.addColorStop(1, 'rgba(255,120,60,0.0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.arc(ex.x, ex.y, r, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function roundedRect(ctx, x, y, w, h, r){
+      ctx.beginPath();
+      ctx.moveTo(x+r, y);
+      ctx.lineTo(x+w-r, y);
+      ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+      ctx.lineTo(x+w, y+h-r);
+      ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+      ctx.lineTo(x+r, y+h);
+      ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+      ctx.lineTo(x, y+r);
+      ctx.quadraticCurveTo(x, y, x+r, y);
+      ctx.closePath();
+    }
+
+    // --- Game control ------------------------------------------------------
+    function startGame(){
+      startOverlay.style.display = 'none';
+      gameOverOverlay.style.display = 'none';
+      running = true; paused = false; resetWorld();
+      last = performance.now(); requestAnimationFrame(loop);
+    }
+    function endGame(won){
+      running = false;
+      Audio.gameOver();
+      gameOverTitle.textContent = won ? 'You Win!' : 'Game Over';
+      finalStats.textContent = `Final Score: ${world.score} — Wave ${world.wave}`;
+      gameOverOverlay.style.display = 'grid';
+    }
+    function togglePause(){ if (!running) return; paused = !paused; pauseBtn.textContent = paused ? 'Resume (P)' : 'Pause (P)'; }
+    function hardReset(){ running = false; paused = false; startOverlay.style.display='grid'; gameOverOverlay.style.display='none'; }
+
+    // Buttons
+    startBtn.addEventListener('click', startGame);
+    playAgainBtn.addEventListener('click', startGame);
+    pauseBtn.addEventListener('click', togglePause);
+    resetBtn.addEventListener('click', hardReset);
+
+    // Start idle state
+    hardReset();
+  </script>
+</body>
+</html>
