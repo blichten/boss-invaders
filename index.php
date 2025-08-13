@@ -124,7 +124,7 @@
       overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;';
       const frame = document.createElement('iframe');
       frame.src = SIGNUP_URL;
-      frame.style.cssText = 'width:100%;max-width:500px;height:500px;border:0;border-radius:8px;box-shadow:0 0 20px rgba(0,0,0,0.8);background:#fff;';
+      frame.style.cssText = 'width:100%;max-width:500px;height:auto;min-height:300px;border:0;border-radius:8px;box-shadow:0 0 20px rgba(0,0,0,0.8);background:#fff;';
       overlay.appendChild(frame);
       document.body.appendChild(overlay);
 
