@@ -153,6 +153,36 @@ html,body{
   background: #0b1021;                  /* same site bg, no transparency */
 }
 
+/* Hero header image styling */
+.hero-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.hero-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* Responsive hero image sizing */
+@media (min-width: 768px) {
+  .hero-image {
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-image {
+    max-width: 90vw;
+  }
+  
+  .hero-header {
+    margin-bottom: 16px;
+  }
+}
+
 .overlay.overlay--solid .panel {
   background: #0b1021;                  /* remove glass/blur */
   border: 0;

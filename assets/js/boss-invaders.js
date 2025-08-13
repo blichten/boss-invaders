@@ -229,16 +229,39 @@
           currentX += dim.w + letterSpScaled; // Use actual letter width + spacing
         }
       
-      // Build simple horizontal protective segments above each word
+      // Build pyramid shield segments above each word (4 rows, decreasing width)
       const segs = [];
-      for (let j = 0; j < letters.length; j++){
-        const L = letters[j];
+      const baseShieldY = wordY - baseH * scale - 8; // Base shield row above letters
+      
+      // Calculate the actual left edge of the word for proper shield alignment
+      const wordLeftEdge = letters[0].x;
+      const wordRightEdge = letters[letters.length - 1].x + letters[letters.length - 1].w;
+      const wordActualWidth = wordRightEdge - wordLeftEdge;
+      
+      // Create 4 rows of shields, each row decreasing by one segment
+      for (let row = 0; row < 4; row++) {
+        const segmentsInRow = letters.length - row; // Decrease segments per row
+        if (segmentsInRow <= 0) break; // Stop if no segments left
         
-        // Simple horizontal line above each letter
-        const segX = L.x;
-        const segY = L.y - L.h - 8; // Fixed height above letters
+        const rowY = baseShieldY - (row * 8); // Each row 8px higher
+        const rowWidth = segmentsInRow * (letters[0].w + letterSpScaled) - letterSpScaled; // Total width of this row
         
-        segs.push({ x: segX, y: segY, w: L.w, h: 6, hits: 0, destroyed: false });
+        // Center the row above the actual word boundaries
+        const rowX = wordLeftEdge + (wordActualWidth - rowWidth) / 2;
+        
+        // Create segments for this row
+        for (let j = 0; j < segmentsInRow; j++) {
+          const segX = rowX + j * (letters[0].w + letterSpScaled);
+          segs.push({ 
+            x: segX, 
+            y: rowY, 
+            w: letters[0].w, 
+            h: 6, 
+            hits: 0, 
+            destroyed: false,
+            row: row // Track which row this segment belongs to
+          });
+        }
       }
       
               shields.push({ 
@@ -259,8 +282,10 @@
           if (S.destroyed) continue;
           const sx=S.x, sy=S.y, sw=S.w, shh=S.h;
           if (b.x>sx && b.x<sx+sw && b.y>sy && b.y<sy+shh){
-            S.hits = Math.min(2, S.hits + 1);
-            if (S.hits >= 2) S.destroyed = true;
+            // Make shields stronger - more hits for higher rows (stronger shields)
+            const maxHits = 4 - S.row; // Higher rows (lower row numbers) are stronger
+            S.hits = Math.min(maxHits, S.hits + 1);
+            if (S.hits >= maxHits) S.destroyed = true;
             spawnDebris(b.x, b.y, b.vy<0 ? 1 : -1);
             return true; // bullet consumed
           }
