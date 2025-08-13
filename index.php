@@ -68,7 +68,7 @@
         <div class="hero-header">
           <img src="assets/img/boss-invaders-header.webp" alt="Boss Invaders - Leadership Game" class="hero-image">
         </div>
-        <p>Bad Boss Behaviors kill morale, productivity, and results. In Boss Invaders, your shields are are the tools of <a href="https://virtualleadershipprograms.com" target="_blank">Leadership Programs</a>: Coaching, Goals, and Feedback. Defend your team, protect your culture, and blast those bad boss behaviors out of the workplace.</p>
+        <p>Bad Boss Behaviors kill morale, productivity, and results. In Boss Invaders, your shields are are the tools of <a href="https://virtualleadershipprograms.com" target="_blank">Virtual Leadership Programs</a>: Coaching, Goals, and Feedback. Defend your team, protect your culture, and blast those bad boss behaviors out of the workplace.</p>
         <h3>DIRECTIONS</h3>
         <p><span class="kbd">←</span>/<span class="kbd">A</span> move left • <span class="kbd">→</span>/<span class="kbd">D</span> move right • <span class="kbd">Space</span> shoot • <span class="kbd">P</span> pause</p>
         <div class="row">

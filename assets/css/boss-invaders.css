@@ -191,6 +191,23 @@ html,body{
   text-align: left;                     /* nicer for long copy on mobile */
 }
 
+/* Style the Virtual Leadership Programs link */
+.overlay.overlay--solid .panel a {
+  color: #FF6600;
+  text-decoration: none;
+}
+
+.overlay.overlay--solid .panel a:hover {
+  text-decoration: underline;
+}
+
+/* Center the DIRECTIONS heading */
+.overlay.overlay--solid .panel h3 {
+  text-align: center;
+  margin-top: 14px;
+  letter-spacing: .5px;
+}
+
 .panel h3 {                             /* "DIRECTIONS" heading in your copy */
   margin-top: 14px;
   letter-spacing: .5px;
