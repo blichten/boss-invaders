@@ -127,6 +127,12 @@
   let shields = []; // array of {word, letters:[{x,y,w,h,topHits,bottomHits,destroyed, off:CanvasRenderingContext2D's canvas}]}
   const debris = []; // small particles from shield hits
 
+  // ===== Missiles (bad boss behavior terms) =====
+  const MISSILE_TERMS = ['Micromanage', 'Selfish', 'Bully'];
+  const MISSILE_FONT = 'bold 16px Arial, Helvetica, sans-serif';
+  const MISSILE_COLOR = '#FF6600'; // Orange color to match brand
+  const MISSILE_BG_COLOR = '#1a1a1a'; // Dark background for contrast
+
   function textMeasureWidth(ctx2d, txt){ return ctx2d.measureText(txt).width; }
 
   function buildShields(){
@@ -397,7 +403,17 @@
     if(!boss.active && world.wave>=2 && (t-bossLastSpawnTime)>=bossConfig.cooldown && chance(bossConfig.spawnProb)){ boss.spawn(); bossLastSpawnTime=t; }
     if(boss.active){
       if(!boss.dying) boss.x += boss.speed*boss.dir*dt; // freeze in place when dying
-      if(!boss.dying && chance(0.02)) bossBullets.push({ x:boss.x+boss.w/2, y:boss.y+boss.h, r:12, vy:240 });
+      if(!boss.dying && chance(0.008)) { // Reduced frequency from 0.02 to 0.008 (fewer missiles)
+        const randomTerm = MISSILE_TERMS[Math.floor(Math.random() * MISSILE_TERMS.length)];
+        bossBullets.push({ 
+          x: boss.x + boss.w/2, 
+          y: boss.y + boss.h, 
+          term: randomTerm,
+          vy: 200, // Slightly slower than bombs
+          w: 120, // Width for text rendering
+          h: 24   // Height for text rendering
+        });
+      }
       if(boss.dying){ boss.dieTimer -= dt; if(boss.dieTimer<=0) boss.despawn(); }
       // Only auto-despawn by leaving screen if NOT dying
       if(!boss.dying && ((boss.dir>0 && boss.x>canvas.width+boss.w) || (boss.dir<0 && boss.x<-boss.w))) boss.despawn();
@@ -442,13 +458,33 @@
       }
     }
 
-    // Collisions: boss bombs vs player
-    for(const b of bossBullets){ if(b.x>player.x-player.w/2 && b.x<player.x+player.w/2 && b.y>player.y-player.h/2 && b.y<player.y+player.h/2){ b.y=9999; world.lives=Math.max(0,world.lives-1); livesEl.textContent=world.lives; AudioFX.playerHit(); explosions.push({x:player.x,y:player.y-8,ttl:.3}); player.reset(); if(world.lives<=0) return endGame(false); paused=true; awaitingResume=true; resumeOverlay.style.display='grid'; } }
+    // Collisions: boss missiles vs player
+    for(const b of bossBullets){ 
+      if(b.x > player.x-player.w/2 && b.x < player.x+player.w/2 && 
+         b.y > player.y-player.h/2 && b.y < player.y+player.h/2){ 
+        b.y=9999; 
+        world.lives=Math.max(0,world.lives-1); 
+        livesEl.textContent=world.lives; 
+        AudioFX.playerHit(); 
+        explosions.push({x:player.x,y:player.y-8,ttl:.3}); 
+        player.reset(); 
+        if(world.lives<=0) return endGame(false); 
+        paused=true; 
+        awaitingResume=true; 
+        resumeOverlay.style.display='grid'; 
+      } 
+    }
 
     // Cull offscreen bullets
     for(let i=bullets.length-1;i>=0;i--) if(bullets[i].y<-20) bullets.splice(i,1);
     for(let i=enemyBullets.length-1;i>=0;i--) if(enemyBullets[i].y>canvas.height+20) enemyBullets.splice(i,1);
-    for(let i=bossBullets.length-1;i>=0;i--) { const bb=bossBullets[i]; if(bb.y>canvas.height+20){ explosions.push({x:bb.x,y:canvas.height-12,ttl:0.35}); bossBullets.splice(i,1);} }
+    for(let i=bossBullets.length-1;i>=0;i--) { 
+      const bb=bossBullets[i]; 
+      if(bb.y>canvas.height+20){ 
+        explosions.push({x:bb.x,y:canvas.height-12,ttl:0.35}); 
+        bossBullets.splice(i,1);
+      } 
+    }
 
     // Explosions decay
     for(let i=explosions.length-1;i>=0;i--){ explosions[i].ttl -= dt; if(explosions[i].ttl<=0) explosions.splice(i,1); }
@@ -523,16 +559,31 @@
     ctx.fillStyle = '#FF6600'; for(const b of bullets){ ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill(); }
     ctx.fillStyle = '#ffffff'; for(const b of enemyBullets){ ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill(); }
 
-    // boss bombs glow + trail
+    // boss missiles (bad boss behavior terms)
     for(const b of bossBullets){
-      const trailLen = Math.min(40, Math.max(10, b.r*3));
+      // Draw missile trail
+      const trailLen = Math.min(30, Math.max(8, b.h * 1.5));
       const gradTrail = ctx.createLinearGradient(b.x, b.y - trailLen, b.x, b.y);
-      gradTrail.addColorStop(0,'rgba(255,204,102,0.0)'); gradTrail.addColorStop(1,'rgba(255,204,102,0.6)');
-      ctx.fillStyle=gradTrail; ctx.fillRect(b.x - Math.max(2,b.r*0.3), b.y - trailLen, Math.max(4,b.r*0.6), trailLen);
-      const grad = ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,Math.max(0.0001,b.r*1.6));
-      grad.addColorStop(0,'rgba(255,230,150,0.9)'); grad.addColorStop(1,'rgba(255,120,60,0.0)');
-      ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(b.x,b.y,Math.max(0.0001,b.r*1.2),0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#ffcc66'; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill();
+      gradTrail.addColorStop(0,'rgba(255,102,0,0.0)'); 
+      gradTrail.addColorStop(1,'rgba(255,102,0,0.4)');
+      ctx.fillStyle=gradTrail; 
+      ctx.fillRect(b.x - 2, b.y - trailLen, 4, trailLen);
+      
+      // Draw missile background
+      ctx.fillStyle = MISSILE_BG_COLOR;
+      ctx.fillRect(b.x - b.w/2, b.y - b.h/2, b.w, b.h);
+      
+      // Draw missile border
+      ctx.strokeStyle = MISSILE_COLOR;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(b.x - b.w/2, b.y - b.h/2, b.w, b.h);
+      
+      // Draw missile text
+      ctx.fillStyle = MISSILE_COLOR;
+      ctx.font = MISSILE_FONT;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(b.term, b.x, b.y);
     }
 
     // explosions (clamped so r never negative)
