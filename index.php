@@ -117,10 +117,31 @@
     const leaderboardBtn = document.getElementById('leaderboardBtn');
     const startBtn = document.getElementById('startBtn');
 
+    // Mobile detection and directions update
+    function updateDirectionsForMobile() {
+      const directionsElement = document.querySelector('#startOverlay .panel p:last-of-type');
+      if (!directionsElement) return;
+      
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                      (window.innerWidth <= 820) || 
+                      ('ontouchstart' in window);
+      
+      if (isMobile) {
+        directionsElement.innerHTML = 'Use <span class="kbd">arrow buttons</span> to move left or right and <span class="kbd">fire button</span> to shoot.';
+      } else {
+        directionsElement.innerHTML = '<span class="kbd">←</span>/<span class="kbd">A</span> move left • <span class="kbd">→</span>/<span class="kbd">D</span> move right • <span class="kbd">Space</span> shoot • <span class="kbd">P</span> pause';
+      }
+    }
+
     function syncPlayerUI(){
       if(playerNameLabel) playerNameLabel.textContent = playerName || 'Not signed in';
     }
     syncPlayerUI();
+
+    // Initialize mobile directions and handle resize
+    updateDirectionsForMobile();
+    window.addEventListener('resize', updateDirectionsForMobile);
+    window.addEventListener('orientationchange', () => setTimeout(updateDirectionsForMobile, 100));
 
     function showSignupOverlay(){
       const overlay = document.createElement('div');
