@@ -82,7 +82,10 @@
       <div class="panel">
         <h1 id="gameOverTitle">Game Over</h1>
         <p id="finalStats"></p>
-        <div class="row"><button id="playAgainBtn" class="btn">Play Again</button></div>
+        <div class="row">
+          <button id="playAgainBtn" class="btn">Play Again</button>
+          <button id="endGameBtn" class="btn" style="background:#0066ff">End Game</button>
+        </div>
       </div>
     </div>
 
@@ -208,6 +211,19 @@
 
     if(leaderboardBtn){
       leaderboardBtn.addEventListener('click', (e)=>{ e.preventDefault(); showLeaderboard(); });
+    }
+
+    // End Game button in game over modal
+    const endGameBtn = document.getElementById('endGameBtn');
+    if(endGameBtn){
+      endGameBtn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        // Hide the game over modal
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        if(gameOverOverlay) gameOverOverlay.style.display = 'none';
+        // Show the leaderboard
+        showLeaderboard();
+      });
     }
 
     // Also open leaderboard from the hero modal (pre-start)
