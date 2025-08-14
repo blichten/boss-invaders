@@ -128,10 +128,12 @@
   const debris = []; // small particles from shield hits
 
   // ===== Missiles (bad boss behavior terms) =====
-  const MISSILE_TERMS = ['Micromanage', 'Selfish', 'Bully'];
+  const MISSILE_TERMS = ['Micromanage', 'Selfish', 'Bully', 'Blame', 'Favoritism', 'Apathy'];
   const MISSILE_FONT = 'bold 16px Arial, Helvetica, sans-serif';
   const MISSILE_COLOR = '#FF6600'; // Orange color to match brand
-  const MISSILE_BG_COLOR = '#1a1a1a'; // Dark background for contrast
+  const MISSILE_BG_COLOR = '#ffffff'; // White background for better contrast
+  const MISSILE_DROP_DELAY = 2.0; // Minimum seconds between missile drops
+  let lastMissileDropTime = 0; // Track when last missile was dropped
 
   function textMeasureWidth(ctx2d, txt){ return ctx2d.measureText(txt).width; }
 
@@ -343,7 +345,19 @@
 
   // Boss entity
   const boss={ active:false, dying:false, dieTimer:0, invulnerable:false, x:0, y:40, w:72, h:54, dir:1, speed:160,
-    spawn(){ this.active=true; this.dying=false; this.invulnerable=false; this.dieTimer=0; this.y=40; this.w=72; this.h=54; this.dir=Math.random()<0.5?1:-1; this.x=this.dir>0? -this.w : canvas.width+this.w; if(t-lastLaughTime>1.0){ playBossLaugh(); lastLaughTime=t; } },
+    spawn(){ 
+      this.active=true; 
+      this.dying=false; 
+      this.invulnerable=false; 
+      this.dieTimer=0; 
+      this.y=40; 
+      this.w=72; 
+      this.h=54; 
+      this.dir=Math.random()<0.5?1:-1; 
+      this.x=this.dir>0? -this.w : canvas.width+this.w; 
+      if(t-lastLaughTime>1.0){ playBossLaugh(); lastLaughTime=t; } 
+      lastMissileDropTime = t; // Reset missile drop timer for new boss
+    },
     despawn(){ this.active=false; this.dying=false; this.invulnerable=false; }
   };
 
@@ -403,7 +417,7 @@
     if(!boss.active && world.wave>=2 && (t-bossLastSpawnTime)>=bossConfig.cooldown && chance(bossConfig.spawnProb)){ boss.spawn(); bossLastSpawnTime=t; }
     if(boss.active){
       if(!boss.dying) boss.x += boss.speed*boss.dir*dt; // freeze in place when dying
-      if(!boss.dying && chance(0.008)) { // Reduced frequency from 0.02 to 0.008 (fewer missiles)
+      if(!boss.dying && chance(0.008) && (t - lastMissileDropTime) >= MISSILE_DROP_DELAY) { // Reduced frequency + delay
         const randomTerm = MISSILE_TERMS[Math.floor(Math.random() * MISSILE_TERMS.length)];
         bossBullets.push({ 
           x: boss.x + boss.w/2, 
@@ -413,6 +427,7 @@
           w: 120, // Width for text rendering
           h: 24   // Height for text rendering
         });
+        lastMissileDropTime = t; // Update last drop time
       }
       if(boss.dying){ boss.dieTimer -= dt; if(boss.dieTimer<=0) boss.despawn(); }
       // Only auto-despawn by leaving screen if NOT dying
@@ -629,9 +644,8 @@
     enemyBullets.length=0; 
     bossBullets.length=0; 
     explosions.length=0;
-    
-
     debris.length=0;
+    lastMissileDropTime = 0; // Reset missile drop timer
     buildShields();
     spawnWave(world.wave); t=0; }
 
