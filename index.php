@@ -15,6 +15,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Boss Invaders</title>
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://staging9.virtualleadershipprograms.com/boss-invaders/" />
+  <meta property="og:title" content="Boss Invaders - Leadership Training Game" />
+  <meta property="og:description" content="Defend your team from bad boss behaviors using the tools of Virtual Leadership Programs: Coaching, Goals, and Feedback. Play now!" />
+  <meta property="og:image" content="https://staging9.virtualleadershipprograms.com/boss-invaders/assets/img/boss-invaders-header.webp" />
+  <meta property="og:image:width" content="1024" />
+  <meta property="og:image:height" content="576" />
+  <meta property="og:image:alt" content="Boss Invaders - Leadership Game" />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://staging9.virtualleadershipprograms.com/boss-invaders/" />
+  <meta property="twitter:title" content="Boss Invaders - Leadership Training Game" />
+  <meta property="twitter:description" content="Defend your team from bad boss behaviors using the tools of Virtual Leadership Programs: Coaching, Goals, and Feedback. Play now!" />
+  <meta property="twitter:image" content="https://staging9.virtualleadershipprograms.com/boss-invaders/assets/img/boss-invaders-header.webp" />
+  <meta property="twitter:image:alt" content="Boss Invaders - Leadership Game" />
+  
+  <!-- Additional SEO -->
+  <meta name="description" content="Defend your team from bad boss behaviors using the tools of Virtual Leadership Programs: Coaching, Goals, and Feedback. Play Boss Invaders now!" />
+  <meta name="keywords" content="leadership training, boss invaders, virtual leadership programs, coaching, goals, feedback, workplace culture" />
+  <meta name="author" content="Virtual Leadership Programs" />
   <link rel="preload" href="assets/img/vlp-ship.png" as="image">
   <link rel="preload" href="assets/img/megatron-1.png" as="image">
   <link rel="stylesheet" href="assets/css/boss-invaders.css?v=0.1.2" />
