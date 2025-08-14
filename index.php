@@ -88,6 +88,12 @@
     <!-- Overlays -->
     <div class="overlay overlay--solid" id="startOverlay">
       <div class="panel">
+        <div class="vlp-logo-section">
+          <a href="https://virtualleadershipprograms.com" target="_blank" rel="noopener noreferrer" class="vlp-logo-link">
+            <img src="assets/img/Circle-WhiteBg.svg" alt="Virtual Leadership Programs Logo" class="vlp-logo">
+          </a>
+          <div class="vlp-presents">PRESENTS</div>
+        </div>
         <div class="hero-header">
           <img src="assets/img/boss-invaders-header.webp" alt="Boss Invaders - Leadership Game" class="hero-image">
         </div>

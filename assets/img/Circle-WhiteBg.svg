@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="uuid-38063554-7987-498c-bbb2-f76c48dfb18b" data-name="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1389.66 1389.66">
+  <g id="uuid-e2e5d9f3-eb07-4585-afb4-8bf62568eba4" data-name="Layer_1">
+    <circle cx="694.83" cy="694.83" r="682.06" style="fill: #fff;"/>
+    <g>
+      <g>
+        <path d="M416.39,534.75l278.46,482.31,278.45-482.31H416.39ZM495.83,580.61h398.04l-199.02,344.73-199.02-344.73Z" style="fill: #f60;"/>
+        <path d="M535.53,603.54l159.3,275.94,159.3-275.94h-318.61ZM575.25,626.47h239.18l-119.59,207.15-119.59-207.15Z" style="fill: #06f;"/>
+        <path d="M257.52,443.03l28.34,49.07,380.66,659.31,28.34,49.08,28.33-49.08,380.67-659.38,28.3-49H257.52ZM694.85,1062.91L376.68,511.81h636.34l-318.16,551.09Z" style="fill: #06f;"/>
+      </g>
+      <path d="M649.02,1196.17c-57.44-5.14-112.88-19.88-164.87-43.86-53.86-24.84-102.73-59-145.26-101.53-95.08-95.08-147.45-221.5-147.45-355.95,0-74.04,15.53-145.07,46.17-211.22l11.23,19.42c-.34.78-1.23,2.88-1.23,2.88-25.31,59.83-38.14,123.39-38.14,188.93s12.83,129.1,38.14,188.92c24.42,57.77,59.42,109.68,104.02,154.28,44.58,44.58,96.49,79.58,154.28,104.04,42.23,17.85,86.62,29.57,131.98,34.84l11.13,19.26ZM751.83,1176.9c45.38-5.28,89.75-16.99,131.92-34.83,57.8-24.45,109.71-59.45,154.3-104.04,44.57-44.57,79.57-96.48,104.02-154.28,25.3-59.83,38.13-123.39,38.13-188.92s-12.83-129.09-38.13-188.92c-.41-.96-.81-1.9-1.22-2.85l11.22-19.43c30.63,66.16,46.15,137.18,46.15,211.2,0,134.47-52.36,260.88-147.43,355.95-42.52,42.52-91.38,76.67-145.23,101.51-51.98,23.97-107.41,38.72-164.84,43.87l11.12-19.26ZM1084.62,405.49c-14.06-18.89-29.72-37-46.57-53.86-44.6-44.59-96.51-79.59-154.3-104.02-59.8-25.31-123.37-38.14-188.92-38.14s-129.1,12.83-188.92,38.14c-57.79,24.44-109.69,59.43-154.28,104.02-16.82,16.82-32.48,34.93-46.56,53.86h-22.3c16.65-23.61,35.51-46,56.13-66.61,95.09-95.07,221.5-147.43,355.94-147.43s260.87,52.36,355.96,147.43c20.61,20.61,39.47,43,56.13,66.61h-22.29Z" style="fill: #f60;"/>
+      <path d="M694.83,1389.66c-93.8,0-184.79-18.37-270.46-54.61-82.74-35-157.05-85.1-220.86-148.9-63.81-63.81-113.91-138.11-148.9-220.86C18.37,879.62,0,788.63,0,694.83s18.37-184.79,54.61-270.46c35-82.74,85.1-157.05,148.9-220.86,63.81-63.81,138.11-113.91,220.86-148.9C510.04,18.37,601.03,0,694.83,0s184.79,18.37,270.46,54.61c82.74,35,157.05,85.1,220.86,148.9,63.81,63.81,113.9,138.11,148.9,220.86,36.24,85.67,54.61,176.67,54.61,270.46s-18.37,184.79-54.61,270.46c-35,82.74-85.1,157.05-148.9,220.86-63.81,63.81-138.11,113.91-220.86,148.9-85.67,36.23-176.67,54.61-270.46,54.61ZM694.83,25.53C325.78,25.53,25.53,325.78,25.53,694.83s300.25,669.3,669.3,669.3,669.3-300.25,669.3-669.3S1063.88,25.53,694.83,25.53Z" style="fill: #06f;"/>
+      <text id="uuid-54812497-7556-4890-b96d-4525728d5306" data-name="CATALYST_SYSTEM" transform="translate(146.93 680.65) rotate(-82.81)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">V</tspan></text>
+      <text transform="translate(161.74 576.95) rotate(-75.02)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">I</tspan></text>
+      <text transform="translate(171.22 532.56) rotate(-67.06)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">R</tspan></text>
+      <text transform="translate(211.66 437.68) rotate(-57.13)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">T</tspan></text>
+      <text transform="translate(256.74 364.89) rotate(-46.9)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">U</tspan></text>
+      <text transform="translate(331.42 284.34) rotate(-35.63)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">A</tspan></text>
+      <text transform="translate(420.48 221.33) rotate(-25.44)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">L</tspan></text>
+      <text transform="translate(499.1 185.27) rotate(-18.81)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0"> </tspan></text>
+      <text transform="translate(536.95 172.3) rotate(-14.57)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0"> </tspan></text>
+      <text transform="translate(574.46 160.97) rotate(-7.95)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">L</tspan></text>
+      <text transform="translate(659.05 148.45) rotate(1.43)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">E</tspan></text>
+      <text transform="translate(754.08 149.73) rotate(12.08)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">A</tspan></text>
+      <text transform="translate(860.5 171.53) rotate(23.99)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">D</tspan></text>
+      <text transform="translate(967.68 219.98) rotate(35.13)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">E</tspan></text>
+      <text transform="translate(1045.9 274.04) rotate(45.53)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">R</tspan></text>
+      <text transform="translate(1118.96 348.82) rotate(55.69)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">S</tspan></text>
+      <text transform="translate(1171.09 422.37) rotate(66.45)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">H</tspan></text>
+      <text transform="translate(1215.19 529.48) rotate(74.96)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">I</tspan></text>
+      <text transform="translate(1229.17 572.69) rotate(82.87)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">P</tspan></text>
+      <text transform="translate(238.5 1156.82) rotate(39.89)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">P</tspan></text>
+      <text transform="translate(331.09 1232.86) rotate(29.3)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">R</tspan></text>
+      <text transform="translate(438.8 1292.58) rotate(17.66)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">O</tspan></text>
+      <text transform="translate(572.31 1332.89) rotate(5.77)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">G</tspan></text>
+      <text transform="translate(699.27 1344.19) rotate(-5.14)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">R</tspan></text>
+      <text transform="translate(821 1332.17) rotate(-16.18)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">A</tspan></text>
+      <text transform="translate(944.98 1295.97) rotate(-28.87)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">M</tspan></text>
+      <text transform="translate(1079.19 1217.59) rotate(-40.52)" style="fill: #06f; font-family: Montserrat-Bold, Montserrat; font-size: 148px; font-weight: 700;"><tspan x="0" y="0">S</tspan></text>
+      <text transform="translate(1198.22 1302.7)" style="fill: #06f; font-family: Montserrat-ExtraBold, Montserrat; font-size: 72px; font-weight: 700;"><tspan x="0" y="0">TM</tspan></text>
+    </g>
+  </g>
+</svg>

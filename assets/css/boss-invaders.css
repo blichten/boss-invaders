@@ -153,6 +153,37 @@ html,body{
   background: #0b1021;                  /* same site bg, no transparency */
 }
 
+/* VLP Logo and Presents section */
+.vlp-logo-section {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.vlp-logo-link {
+  display: inline-block;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.vlp-logo-link:hover {
+  transform: scale(1.05);
+}
+
+.vlp-logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 12px;
+}
+
+.vlp-presents {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
 /* Hero header image styling */
 .hero-header {
   text-align: center;
@@ -174,6 +205,18 @@ html,body{
 }
 
 @media (max-width: 767px) {
+  .vlp-logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 8px;
+  }
+  
+  .vlp-presents {
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+  }
+  
   .hero-image {
     max-width: 90vw;
   }
